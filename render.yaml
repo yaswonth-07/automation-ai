@@ -1,0 +1,81 @@
+services:
+  - type: web
+    name: agentflow-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CREDENTIAL_ENCRYPTION_KEY
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: agentflow-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: agentflow-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: agentflow-redis
+          property: password
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GMAIL_CLIENT_ID
+        sync: false
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: GMAIL_REDIRECT_URI
+        sync: false
+      - key: SLACK_CLIENT_ID
+        sync: false
+      - key: SLACK_CLIENT_SECRET
+        sync: false
+      - key: SLACK_REDIRECT_URI
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_CLIENT_SECRET
+        sync: false
+      - key: DISCORD_REDIRECT_URI
+        sync: false
+      - key: GOOGLE_SHEETS_CLIENT_ID
+        sync: false
+      - key: GOOGLE_SHEETS_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_SHEETS_REDIRECT_URI
+        sync: false
+
+  - type: web
+    name: agentflow-client
+    runtime: node
+    rootDir: client
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://agentflow-api.onrender.com/api
+      - key: NEXT_PUBLIC_SOCKET_URL
+        value: https://agentflow-api.onrender.com
+
+  - type: redis
+    name: agentflow-redis
+    plan: free
+    maxmemoryPolicy: noeviction
