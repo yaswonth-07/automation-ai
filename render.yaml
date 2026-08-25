@@ -29,11 +29,16 @@ services:
           type: redis
           name: agentflow-redis
           property: port
-      - key: REDIS_PASSWORD
+      - key: REDIS_HOST
         fromService:
-          type: redis
-          name: agentflow-redis
-          property: password
+        type: redis
+        name: agentflow-redis
+        property: host
+      - key: REDIS_PORT
+        fromService:
+        type: redis
+        name: agentflow-redis
+        property: port
       - key: OPENROUTER_API_KEY
         sync: false
       - key: GEMINI_API_KEY
@@ -75,7 +80,8 @@ services:
       - key: NEXT_PUBLIC_SOCKET_URL
         value: https://agentflow-api.onrender.com
 
-  - type: redis
-    name: agentflow-redis
-    plan: free
-    maxmemoryPolicy: noeviction
+  -  - type: keyvalue
+       name: agentflow-redis
+       plan: free
+       ipAllowList: []
+       maxmemoryPolicy: noeviction
