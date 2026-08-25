@@ -80,8 +80,10 @@ services:
       - key: NEXT_PUBLIC_SOCKET_URL
         value: https://agentflow-api.onrender.com
 
-  -  - type: keyvalue
-       name: agentflow-redis
-       plan: free
-       ipAllowList: []
-       maxmemoryPolicy: noeviction
+  -   type: keyvalue
+      name: agentflow-redis
+      plan: free
+      ipAllowList:
+      - source: 0.0.0.0/32
+        description: block-external-access
+      maxmemoryPolicy: noeviction
