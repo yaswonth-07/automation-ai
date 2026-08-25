@@ -1,4 +1,7 @@
 services:
+  # =========================
+  # BACKEND API
+  # =========================
   - type: web
     name: agentflow-api
     runtime: node
@@ -6,84 +9,110 @@ services:
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/health
+
     envVars:
       - key: NODE_ENV
         value: production
+
       - key: CLIENT_URL
         sync: false
+
       - key: MONGO_URI
         sync: false
+
       - key: JWT_SECRET
         generateValue: true
+
       - key: CREDENTIAL_ENCRYPTION_KEY
         generateValue: true
+
       - key: JWT_EXPIRES_IN
         value: 7d
+
+      # Redis / Render Key Value
       - key: REDIS_HOST
         fromService:
-          type: redis
+          type: keyvalue
           name: agentflow-redis
           property: host
+
       - key: REDIS_PORT
         fromService:
-          type: redis
+          type: keyvalue
           name: agentflow-redis
           property: port
-      - key: REDIS_HOST
-        fromService:
-        type: redis
-        name: agentflow-redis
-        property: host
-      - key: REDIS_PORT
-        fromService:
-        type: redis
-        name: agentflow-redis
-        property: port
+
+      # AI API keys
       - key: OPENROUTER_API_KEY
         sync: false
+
       - key: GEMINI_API_KEY
         sync: false
+
+      # Gmail
       - key: GMAIL_CLIENT_ID
         sync: false
+
       - key: GMAIL_CLIENT_SECRET
         sync: false
+
       - key: GMAIL_REDIRECT_URI
         sync: false
+
+      # Slack
       - key: SLACK_CLIENT_ID
         sync: false
+
       - key: SLACK_CLIENT_SECRET
         sync: false
+
       - key: SLACK_REDIRECT_URI
         sync: false
+
+      # Discord
       - key: DISCORD_CLIENT_ID
         sync: false
+
       - key: DISCORD_CLIENT_SECRET
         sync: false
+
       - key: DISCORD_REDIRECT_URI
         sync: false
+
+      # Google Sheets
       - key: GOOGLE_SHEETS_CLIENT_ID
         sync: false
+
       - key: GOOGLE_SHEETS_CLIENT_SECRET
         sync: false
+
       - key: GOOGLE_SHEETS_REDIRECT_URI
         sync: false
 
+
+  # =========================
+  # FRONTEND CLIENT
+  # =========================
   - type: web
     name: agentflow-client
     runtime: node
     rootDir: client
     buildCommand: npm ci && npm run build
     startCommand: npm start
+
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://agentflow-api.onrender.com/api
+
       - key: NEXT_PUBLIC_SOCKET_URL
         value: https://agentflow-api.onrender.com
 
-  -   type: keyvalue
-      name: agentflow-redis
-      plan: free
-      ipAllowList:
-      - source: 0.0.0.0/32
-        description: block-external-access
-      maxmemoryPolicy: noeviction
+
+  # =========================
+  # REDIS / KEY VALUE
+  # =========================
+  - type: keyvalue
+    name: agentflow-redis
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
